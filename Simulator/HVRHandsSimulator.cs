@@ -1,7 +1,11 @@
 using UnityEngine;
 using UnityEngine.XR;
+#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
+#elif ENABLE_LEGACY_INPUT_MANAGER
+using UnityEngine.SpatialTracking;
+#endif
 using HurricaneVR.Framework.Core.Grabbers;
 using HurricaneVR.Framework.ControllerInput;
 using HurricaneVR.Framework.Core.Player;
@@ -51,6 +55,7 @@ namespace HurricaneVRExtensions.Simulator
         public KeyCode GripKey = KeyCode.G;
         public KeyCode PrimaryButtonKey = KeyCode.Alpha1;
         public KeyCode SecondaryButtonKey = KeyCode.Alpha2;
+        public KeyCode JoystickButtonKey = KeyCode.Alpha3;
 
         public bool UsingLeftHand => Input.GetKey(LeftHandKey);
         public bool UsingRightHand => Input.GetKey(RightHandKey);
@@ -362,6 +367,7 @@ namespace HurricaneVRExtensions.Simulator
             _controllerTargetRight.transform.position = _rightControllerPosition + _startHandsPositionOffset;
         }
 
+        
         private bool ResolveDependencies()
         {
             if (!autoResolveDependencies)
