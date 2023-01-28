@@ -1,5 +1,7 @@
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+#endif
 using HurricaneVR.Framework.Core.Player;
 using HurricaneVR.Framework.ControllerInput;
 
@@ -23,11 +25,11 @@ namespace HurricaneVRExtensions.Simulator
 
         #region Input
 #if ENABLE_INPUT_SYSTEM
-        public bool HasTurningStarted => Mouse.current != null && Mouse.current.rightButton.isPressed;
+        public bool HasTurningStarted => Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame;
         public bool HasTurningEnded => Mouse.current.rightButton.wasReleasedThisFrame;
         public Vector2 MouseDelta => Mouse.current.delta.ReadValue();
 #elif ENABLE_LEGACY_INPUT_MANAGER
-        public bool IsTurning => Input.GetMouseButton(1);
+        public bool HasTurningStarted => Input.GetMouseButtonDown(1);
         public bool HasTurningEnded => Input.GetMouseButtonUp(1);
         public Vector2 MouseDelta => new(Input.GetAxis("Mouse X") * 10f, Input.GetAxis("Mouse Y") * 10f);
 #endif
@@ -41,7 +43,6 @@ namespace HurricaneVRExtensions.Simulator
                 enabled = false;
                 return;
             }
-
             _hurricanePlayerInputs.UseWASD = _canMove;
         }
         protected void Update()
@@ -102,3 +103,4 @@ namespace HurricaneVRExtensions.Simulator
         #endregion
     }
 }
+
