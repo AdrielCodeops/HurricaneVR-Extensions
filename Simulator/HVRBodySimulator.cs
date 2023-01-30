@@ -31,7 +31,7 @@ namespace HurricaneVRExtensions.Simulator
 #elif ENABLE_LEGACY_INPUT_MANAGER
         public bool HasTurningStarted => Input.GetMouseButtonDown(1);
         public bool HasTurningEnded => Input.GetMouseButtonUp(1);
-        public Vector2 MouseDelta => new(Input.GetAxis("Mouse X") * 10f, Input.GetAxis("Mouse Y") * 10f);
+        public Vector2 MouseDelta => new Vector2(Input.GetAxis("Mouse X") * 10f, Input.GetAxis("Mouse Y") * 10f);
 #endif
         #endregion
 
