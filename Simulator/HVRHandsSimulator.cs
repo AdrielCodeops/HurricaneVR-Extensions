@@ -22,7 +22,7 @@ namespace HurricaneVRExtensions.Simulator
         [Header("Parameters")]
         [SerializeField] private float _handMovementSpeed = .1f;
         [SerializeField] private float _handsRotationSpeed = 20f;
-        [SerializeField] private Vector3 _startHandsPositionOffset = new(0, 0.8f, 0.3f);
+        [SerializeField] private Vector3 _startHandsPositionOffset = new Vector3(0, 0.8f, 0.3f);
 
         #region Input
 #if ENABLE_INPUT_SYSTEM
@@ -70,7 +70,7 @@ namespace HurricaneVRExtensions.Simulator
         public bool SecondaryButtonEnded => Input.GetKeyUp(SecondaryButtonKey);
         public bool JoystickButtonStarted => Input.GetKeyDown(JoystickButtonKey);
         public bool JoystickButtonEnded => Input.GetKeyUp(JoystickButtonKey);
-        public Vector2 MouseDelta => new(Input.GetAxis("Mouse X") * 10f, Input.GetAxis("Mouse Y") * 10f);
+        public Vector2 MouseDelta => new Vector2(Input.GetAxis("Mouse X") * 10f, Input.GetAxis("Mouse Y") * 10f);
         public Vector2 MouseDeltaScroll => Input.mouseScrollDelta * 10f;
 #endif
         #endregion
@@ -211,7 +211,7 @@ namespace HurricaneVRExtensions.Simulator
 
         public void SimulatePrimaryButton(HVRController controller, bool down)
         {
-            if(down)
+            if (down)
                 SimulateButtonDown(ref controller.PrimaryButtonState, ref controller.PrimaryButton);
             else
                 SimulateButtonUp(ref controller.PrimaryButtonState, ref controller.PrimaryButton);
@@ -259,7 +259,7 @@ namespace HurricaneVRExtensions.Simulator
         }
         private void MoveHands()
         {
-            Vector3 direction = new(MouseDelta.x, MouseDelta.y, MouseDeltaScroll.y);
+            Vector3 direction = new Vector3(MouseDelta.x, MouseDelta.y, MouseDeltaScroll.y);
 
             if (UsingLeftHand)
                 _controllerTargetLeft.position += _handMovementSpeed * Time.deltaTime * (_camera.transform.rotation * direction);
@@ -270,7 +270,7 @@ namespace HurricaneVRExtensions.Simulator
 
         private void RotateHands()
         {
-            Vector3 direction = new(-MouseDelta.y, MouseDelta.x, MouseDeltaScroll.y);
+            Vector3 direction = new Vector3(-MouseDelta.y, MouseDelta.x, MouseDeltaScroll.y);
 
             if (UsingLeftHand)
                 _controllerTargetLeft.Rotate(_handsRotationSpeed * Time.deltaTime * direction);
@@ -280,7 +280,7 @@ namespace HurricaneVRExtensions.Simulator
         }
         private void SimulateGrab(HVRController controller)
         {
-            if(controller.Side == HVRHandSide.Left)
+            if (controller.Side == HVRHandSide.Left)
             {
                 if (_lockLeftHandGrabbable)
                 {
@@ -361,13 +361,13 @@ namespace HurricaneVRExtensions.Simulator
         #region Initialization
         private void SetHandsInitialPosition()
         {
-            Vector3 _leftControllerPosition = new(_controllerTargetLeft.transform.position.x - 0.1f, Rig.transform.position.y, Rig.transform.position.z);
-            Vector3 _rightControllerPosition = new(_controllerTargetRight.transform.position.x + 0.1f, Rig.transform.position.y, Rig.transform.position.z);
+            Vector3 _leftControllerPosition = new Vector3(_controllerTargetLeft.transform.position.x - 0.1f, Rig.transform.position.y, Rig.transform.position.z);
+            Vector3 _rightControllerPosition = new Vector3(_controllerTargetRight.transform.position.x + 0.1f, Rig.transform.position.y, Rig.transform.position.z);
             _controllerTargetLeft.transform.position = _leftControllerPosition + _startHandsPositionOffset;
             _controllerTargetRight.transform.position = _rightControllerPosition + _startHandsPositionOffset;
         }
 
-        
+
         private bool ResolveDependencies()
         {
             if (!autoResolveDependencies)
@@ -375,7 +375,7 @@ namespace HurricaneVRExtensions.Simulator
 
             HVRTrackedController[] trackedControllers = Rig.GetComponentsInChildren<HVRTrackedController>();
 
-            if(trackedControllers.Length != 2)
+            if (trackedControllers.Length != 2)
             {
                 Debug.Log(DependencyError("HVRTrackedController"));
                 return false;
@@ -390,15 +390,15 @@ namespace HurricaneVRExtensions.Simulator
                 }
             }
 
-            foreach(HVRTrackedController controller in trackedControllers)
+            foreach (HVRTrackedController controller in trackedControllers)
             {
-                if(controller.HandSide == HVRHandSide.Left)
+                if (controller.HandSide == HVRHandSide.Left)
                     _controllerTargetLeft = controller.gameObject.transform;
                 else
                     _controllerTargetRight = controller.gameObject.transform;
             }
 
-            if(Rig.GetComponentInChildren<HVRCamera>() != null)
+            if (Rig.GetComponentInChildren<HVRCamera>() != null)
                 _camera = Rig.GetComponentInChildren<HVRCamera>().gameObject.GetComponent<Camera>();
             else
             {
@@ -414,7 +414,7 @@ namespace HurricaneVRExtensions.Simulator
                 return false;
             }
 
-            foreach(HVRHandGrabber grabber in handGrabbers)
+            foreach (HVRHandGrabber grabber in handGrabbers)
             {
                 if (grabber.HandSide == HVRHandSide.Left)
                     HandGrabberLeft = grabber;
