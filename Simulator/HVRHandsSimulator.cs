@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.XR;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
@@ -10,6 +9,7 @@ using HurricaneVR.Framework.Core.Grabbers;
 using HurricaneVR.Framework.ControllerInput;
 using HurricaneVR.Framework.Core.Player;
 using HurricaneVR.Framework.Shared;
+using System;
 
 namespace HurricaneVRExtensions.Simulator
 {
@@ -36,16 +36,11 @@ namespace HurricaneVRExtensions.Simulator
         public bool UsingLeftHand => Keyboard.current[LeftHandKey].isPressed;
         public bool UsingRightHand => Keyboard.current[RightHandKey].isPressed;
         public bool RotatingHands => Mouse.current.middleButton.isPressed;
-        public bool GripStarted => Keyboard.current[GripKey].wasPressedThisFrame;
-        public bool GripEnded => Keyboard.current[GripKey].wasReleasedThisFrame;
-        public bool TriggerStarted => Mouse.current.leftButton.wasPressedThisFrame;
-        public bool TriggerEnded => Mouse.current.leftButton.wasReleasedThisFrame;
+        public bool GripPressed => Keyboard.current[GripKey].isPressed;
+        public bool TriggerPressed => Mouse.current.leftButton.isPressed;
         public bool PrimaryButtonStarted => Keyboard.current[PrimaryButtonKey].wasPressedThisFrame;
-        public bool PrimaryButtonEnded => Keyboard.current[PrimaryButtonKey].wasReleasedThisFrame;
         public bool SecondaryButtonStarted => Keyboard.current[SecondaryButtonKey].wasPressedThisFrame;
-        public bool SecondaryButtonEnded => Keyboard.current[SecondaryButtonKey].wasReleasedThisFrame;
         public bool JoystickButtonStarted => Keyboard.current[JoystickButtonKey].wasPressedThisFrame;
-        public bool JoystickButtonEnded => Keyboard.current[JoystickButtonKey].wasReleasedThisFrame;
         public Vector2 MouseDelta => Mouse.current.delta.ReadValue();
         public Vector2 MouseDeltaScroll => Mouse.current.scroll.ReadValue();
 
@@ -60,16 +55,11 @@ namespace HurricaneVRExtensions.Simulator
         public bool UsingLeftHand => Input.GetKey(LeftHandKey);
         public bool UsingRightHand => Input.GetKey(RightHandKey);
         public bool RotatingHands => Input.GetMouseButton(2);
-        public bool GripStarted => Input.GetKeyDown(GripKey);
-        public bool GripEnded => Input.GetKeyUp(GripKey);
-        public bool TriggerStarted => Input.GetMouseButtonDown(0);
-        public bool TriggerEnded => Input.GetMouseButtonUp(0);
+        public bool GripPressed => Input.GetKey(GripKey);
+        public bool TriggerPressed => Input.GetMouseButton(0);
         public bool PrimaryButtonStarted => Input.GetKeyDown(PrimaryButtonKey);
-        public bool PrimaryButtonEnded => Input.GetKeyUp(PrimaryButtonKey);
         public bool SecondaryButtonStarted => Input.GetKeyDown(SecondaryButtonKey);
-        public bool SecondaryButtonEnded => Input.GetKeyUp(SecondaryButtonKey);
         public bool JoystickButtonStarted => Input.GetKeyDown(JoystickButtonKey);
-        public bool JoystickButtonEnded => Input.GetKeyUp(JoystickButtonKey);
         public Vector2 MouseDelta => new Vector2(Input.GetAxis("Mouse X") * 10f, Input.GetAxis("Mouse Y") * 10f);
         public Vector2 MouseDeltaScroll => Input.mouseScrollDelta * 10f;
 #endif
@@ -89,9 +79,6 @@ namespace HurricaneVRExtensions.Simulator
         [HideInInspector] public HVRController ControllerLeft;
         [HideInInspector] public HVRController ControllerRight;
 
-        private bool _lockLeftHandGrabbable;
-        private bool _lockRightHandGrabbable;
-
         private void Start()
         {
             if (!ResolveDependencies() || Application.isMobilePlatform)
@@ -108,11 +95,7 @@ namespace HurricaneVRExtensions.Simulator
             HVRInputManager.Instance.LeftController.enabled = !UsingLeftHand;
             HVRInputManager.Instance.RightController.enabled = !UsingRightHand;
 
-            HandGrabberLeft.CanRelease = !_lockLeftHandGrabbable;
-            HandGrabberRight.CanRelease = !_lockRightHandGrabbable;
-
             ProcessHandsInput();
-
             UpdateFingerCurls();
         }
 
@@ -126,137 +109,92 @@ namespace HurricaneVRExtensions.Simulator
 
             if (UsingLeftHand)
             {
-                if (HandGrabberLeft.IsGrabbing && _lockLeftHandGrabbable == false)
-                {
-                    _lockLeftHandGrabbable = true;
-                }
+                HandleGrabbing(HandGrabberLeft, ControllerLeft);
 
-                if (GripStarted)
-                    SimulateGrab(ControllerLeft);
-                if (TriggerStarted)
-                    SimulateTriggerButton(ControllerLeft, true);
-                if (PrimaryButtonStarted)
-                    SimulatePrimaryButton(ControllerLeft, true);
-                if (SecondaryButtonStarted)
-                    SimulateSecondaryButton(ControllerLeft, true);
-                if (JoystickButtonStarted)
-                    SimulateJoystickButton(ControllerLeft, true);
+                SimulatePressButton(HVRButtons.Grip, ref ControllerLeft.GripButtonState, ref ControllerLeft.Grip, GripPressed);
+                SimulatePressButton(HVRButtons.Trigger, ref ControllerLeft.TriggerButtonState, ref ControllerLeft.Trigger, TriggerPressed);
+
+                SimulateTapButton(HVRButtons.Primary, ref ControllerLeft.PrimaryButtonState, ref ControllerLeft.PrimaryButton, PrimaryButtonStarted);
+                SimulateTapButton(HVRButtons.Secondary, ref ControllerLeft.SecondaryButtonState, ref ControllerLeft.SecondaryButton, SecondaryButtonStarted);
+                SimulateTapButton(HVRButtons.JoystickButton, ref ControllerLeft.JoystickButtonState, ref ControllerLeft.JoystickClicked, JoystickButtonStarted);
             }
 
             if (UsingRightHand)
             {
-                if (HandGrabberRight.IsGrabbing && _lockRightHandGrabbable == false)
+                HandleGrabbing(HandGrabberRight, ControllerRight);
+
+                SimulatePressButton(HVRButtons.Grip, ref ControllerRight.GripButtonState, ref ControllerRight.Grip, GripPressed);
+                SimulatePressButton(HVRButtons.Trigger, ref ControllerRight.TriggerButtonState, ref ControllerRight.Trigger, TriggerPressed);
+
+                SimulateTapButton(HVRButtons.Primary, ref ControllerRight.PrimaryButtonState, ref ControllerRight.PrimaryButton, PrimaryButtonStarted);
+                SimulateTapButton(HVRButtons.Secondary, ref ControllerRight.SecondaryButtonState, ref ControllerRight.SecondaryButton, SecondaryButtonStarted);
+                SimulateTapButton(HVRButtons.JoystickButton, ref ControllerRight.JoystickButtonState, ref ControllerRight.JoystickClicked, JoystickButtonStarted);
+            }
+        }
+
+        protected void SetButtonState(HVRButtons button, ref HVRButtonState buttonState, bool pressed)
+        {
+            if (pressed)
+            {
+                if (!buttonState.Active)
                 {
-                    _lockRightHandGrabbable = true;
+                    buttonState.JustActivated = true;
+                    buttonState.Active = true;
                 }
-
-                if (GripStarted)
-                    SimulateGrab(ControllerRight);
-                if (TriggerStarted)
-                    SimulateTriggerButton(ControllerRight, true);
-                if (PrimaryButtonStarted)
-                    SimulatePrimaryButton(ControllerRight, true);
-                if (SecondaryButtonStarted)
-                    SimulateSecondaryButton(ControllerRight, true);
-                if (JoystickButtonStarted)
-                    SimulateJoystickButton(ControllerRight, true);
             }
-
-            if (GripEnded)
-            {
-                SimulateGripButton(ControllerLeft, false);
-                SimulateGripButton(ControllerRight, false);
-            }
-
-            if (TriggerEnded)
-            {
-                SimulateTriggerButton(ControllerLeft, false);
-                SimulateTriggerButton(ControllerRight, false);
-            }
-
-            if (PrimaryButtonEnded)
-            {
-                SimulatePrimaryButton(ControllerLeft, false);
-                SimulatePrimaryButton(ControllerRight, false);
-            }
-
-            if (SecondaryButtonEnded)
-            {
-                SimulateSecondaryButton(ControllerLeft, false);
-                SimulateSecondaryButton(ControllerRight, false);
-            }
-
-            if (JoystickButtonEnded)
-            {
-                SimulateJoystickButton(ControllerLeft, false);
-                SimulateJoystickButton(ControllerRight, false);
-            }
-        }
-
-        public void SimulateTriggerButton(HVRController controller, bool down)
-        {
-            if (down)
-                SimulateButtonDown(ref controller.TriggerButtonState, ref controller.Trigger);
             else
-                SimulateButtonUp(ref controller.TriggerButtonState, ref controller.Trigger);
+            {
+                if (buttonState.Active)
+                {
+                    buttonState.Active = false;
+                    buttonState.JustDeactivated = true;
+                }
+            }
+
+            HVRController.SetButtonState(HVRHandSide.Left, button, buttonState);
         }
 
-        public void SimulateGripButton(HVRController controller, bool down)
+        protected void ResetButton(ref HVRButtonState buttonState)
         {
-            if (down)
-                SimulateButtonDown(ref controller.GripButtonState, ref controller.Grip);
-            else
-                SimulateButtonUp(ref controller.GripButtonState, ref controller.Grip);
-        }
-
-        public void SimulatePrimaryButton(HVRController controller, bool down)
-        {
-            if (down)
-                SimulateButtonDown(ref controller.PrimaryButtonState, ref controller.PrimaryButton);
-            else
-                SimulateButtonUp(ref controller.PrimaryButtonState, ref controller.PrimaryButton);
-        }
-
-        public void SimulateSecondaryButton(HVRController controller, bool down)
-        {
-            if (down)
-                SimulateButtonDown(ref controller.SecondaryButtonState, ref controller.SecondaryButton);
-            else
-                SimulateButtonUp(ref controller.SecondaryButtonState, ref controller.SecondaryButton);
-        }
-
-        public void SimulateJoystickButton(HVRController controller, bool down)
-        {
-            if (down)
-                SimulateButtonDown(ref controller.JoystickButtonState, ref controller.JoystickClicked);
-            else
-                SimulateButtonUp(ref controller.JoystickButtonState, ref controller.JoystickClicked);
-        }
-
-        public void SimulateButtonDown(ref HVRButtonState buttonState, ref float buttonValue)
-        {
-            buttonState.JustActivated = true;
-            buttonValue = 1f;
-            buttonState.Active = true;
-        }
-        public void SimulateButtonDown(ref HVRButtonState buttonState, ref bool buttonValue)
-        {
-            buttonState.JustActivated = true;
-            buttonValue = true;
-            buttonState.Active = true;
-        }
-        public void SimulateButtonUp(ref HVRButtonState buttonState, ref float buttonValue)
-        {
+            buttonState.JustDeactivated = false;
             buttonState.JustActivated = false;
-            buttonValue = 0f;
-            buttonState.Active = false;
+            buttonState.Value = 0f;
         }
-        public void SimulateButtonUp(ref HVRButtonState buttonState, ref bool buttonValue)
+
+        private void SimulatePressButton(HVRButtons button, ref HVRButtonState buttonState, ref float value, bool pressed )
         {
-            buttonState.JustActivated = false;
-            buttonValue = false;
-            buttonState.Active = false;
+            value = Convert.ToInt16(pressed);
+            ResetButton(ref buttonState);
+            buttonState.Value = value;
+            SetButtonState(button, ref buttonState, pressed);
         }
+
+        private void SimulateTapButton(HVRButtons button, ref HVRButtonState buttonState, ref bool value, bool pressed)
+        {
+            value = pressed;
+            ResetButton(ref buttonState);
+            buttonState.Value = Convert.ToInt16(value);
+            SetButtonState(button, ref buttonState, pressed);
+        }
+
+        private void HandleGrabbing(HVRHandGrabber handGrabber, HVRController controller)
+        {
+            if (handGrabber.IsGrabbing && handGrabber.CanRelease == true)
+            {
+                handGrabber.CanRelease = false;
+            }
+
+            if (controller.GripButtonState.JustActivated)
+            {
+                if (handGrabber.IsGrabbing && handGrabber.CanRelease == false)
+                {
+                    handGrabber.CanRelease = true;
+                    handGrabber.ForceRelease();
+                    return;
+                }
+            }
+        }
+
         private void MoveHands()
         {
             Vector3 direction = new Vector3(MouseDelta.x, MouseDelta.y, MouseDeltaScroll.y);
@@ -277,28 +215,6 @@ namespace HurricaneVRExtensions.Simulator
 
             if (UsingRightHand)
                 _controllerTargetRight.Rotate(_handsRotationSpeed * Time.deltaTime * direction);
-        }
-        private void SimulateGrab(HVRController controller)
-        {
-            if (controller.Side == HVRHandSide.Left)
-            {
-                if (_lockLeftHandGrabbable)
-                {
-                    _lockLeftHandGrabbable = false;
-                    return;
-                }
-            }
-            if (controller.Side == HVRHandSide.Right)
-            {
-                if (_lockRightHandGrabbable)
-                {
-                    _lockRightHandGrabbable = false;
-                    return;
-                }
-            }
-
-            SimulateGripButton(controller, true);
-
         }
 
         private void UpdateFingerCurls()
@@ -333,28 +249,14 @@ namespace HurricaneVRExtensions.Simulator
                     HVRInputManager.Instance.IsOpenXR);
             }
 
-            float[] curlsLeftHand = HVRController.LeftFingerCurls;
-
-            if (ControllerLeft.XRNode == XRNode.RightHand)
+            for (int i = 0; i < 5; i++)
             {
-                curlsLeftHand = HVRController.RightFingerCurls;
+                HVRController.LeftFingerCurls[i] = ControllerLeft.FingerCurls[i];
             }
 
             for (int i = 0; i < 5; i++)
             {
-                curlsLeftHand[i] = ControllerLeft.FingerCurls[i];
-            }
-
-            float[] curlsRightHand = HVRController.LeftFingerCurls;
-
-            if (ControllerRight.XRNode == XRNode.RightHand)
-            {
-                curlsRightHand = HVRController.RightFingerCurls;
-            }
-
-            for (int i = 0; i < 5; i++)
-            {
-                curlsRightHand[i] = ControllerRight.FingerCurls[i];
+                HVRController.RightFingerCurls[i] = ControllerRight.FingerCurls[i];
             }
         }
 
