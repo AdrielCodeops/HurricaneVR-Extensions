@@ -50,10 +50,25 @@ Right Hand:
 - Joystick Button -> E + 3
 
 Changelog ------------------------------
+HVRSimulator 1.5.1
+- Fixed UI not working for right hand.
+
+HVRSimulator 1.5
+- Change: Complete rewrite of the button simulation, now correctly running across the entire Hurricane Framework.
+- Change: You can now interact with UI elements with simulated controllers.
+- Change: Cleaned up the implementation of finger curling to improve its performance.
+- Fix: The simulation of tap buttons (A, B, Joystick...) on the controller now works correctly.
+
+HVRSimulator 1.4.1
+- Fix: Removed IDE0090 syntax to avoid compiler errors on Unity 2019
+
+HVRSimulator 1.4
+- Fix: Compiler errors when using old input system
+
 HVRSimulator 1.3
-- Improved AutoResolveDependencies stability.
-- Improved code self-documentation.
-- Namespace changed to "HurricaneVRExtensions.Simulator"
+- Fix: AutoResolveDependencies stability.
+- Change: Improved code self-documentation.
+- Change: Namespace changed to "HurricaneVRExtensions.Simulator"
 
 Update Considerations: Package root folder changed to "HurricaneVRExtensions/Simulator" to better match hurricane's folder naming. - Keep sure to remove old simulator folder at "HurricaneExtensions/Simulator".
 
