@@ -1,4 +1,5 @@
 
+
 HVRSimulator: This tool provides components to control the hurricane/hexabody rig with the mouse/keyboard.
 
 * SETUP:
@@ -50,6 +51,11 @@ Right Hand:
 - Joystick Button -> E + 3
 
 Changelog ------------------------------
+HVRSimulator 1.5.2
+- Fix: Removed Time.deltaTime from body rotation to avoid stuttering.
+- Fix: Camera vertical movement moved to LateUpdate to avoid stuttering.
+- Change: Adjusted the default body rotation speed.
+
 HVRSimulator 1.5.1
 - Fixed UI not working for right hand.
 
