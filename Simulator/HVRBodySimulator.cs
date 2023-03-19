@@ -15,7 +15,7 @@ namespace HurricaneVRExtensions.Simulator
 
         [Header("Parameters")]
         [SerializeField] protected bool _canMove = true;
-        [SerializeField] protected float _turnSpeed = 4f;
+        [SerializeField] protected float _turnSpeed = 0.05f;
 
         //Hurricane dependencies
         private HVRPlayerController _hurricanePlayerController;
@@ -63,13 +63,24 @@ namespace HurricaneVRExtensions.Simulator
             }
         }
 
-        protected virtual void TurnRig()
-        {
-            float rotationAngleX = MouseDelta.x * Time.deltaTime * _turnSpeed;
-            _hurricanePlayerController.transform.RotateAround(_hurricanePlayerController.transform.position, Vector3.up, rotationAngleX);
+		protected virtual void LateUpdate ()
+		{
+			if ( _isTurning )
+			{
+				TurnCamera();
+			}
+		}
 
-            float rotationAngleY = MouseDelta.y * Time.deltaTime * _turnSpeed;
-            _hurricanePlayerController.Camera.transform.RotateAround(_hurricanePlayerController.Camera.transform.position, _hurricanePlayerController.Camera.transform.right, -rotationAngleY);
+		protected virtual void TurnCamera ()
+		{
+			float rotationAngleY = MouseDelta.y * _turnSpeed;
+			_hurricanePlayerController.Camera.transform.RotateAround( _hurricanePlayerController.Camera.transform.position, _hurricanePlayerController.Camera.transform.right, -rotationAngleY );
+		}
+
+		protected virtual void TurnRig()
+        {
+            float rotationAngleX = MouseDelta.x * _turnSpeed;
+            _hurricanePlayerController.transform.RotateAround(_hurricanePlayerController.transform.position, Vector3.up, rotationAngleX);
         }
 
         #region Initialization
@@ -103,4 +114,3 @@ namespace HurricaneVRExtensions.Simulator
         #endregion
     }
 }
-
