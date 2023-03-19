@@ -21,21 +21,16 @@ namespace HurricaneVRExtensions.Simulator
             _hexabodyInputs.KeyboardDebug = _canMove;
         }
 
-        protected override void FixedUpdate()
-        {
-            if (_isTurning)
-            {
-                TurnRig();
-            }
-        }
+		protected override void TurnCamera ()
+		{
+			float rotationAngleY = MouseDelta.y * _turnSpeed;
+			_hexabodyPlayer4.Camera.transform.RotateAround( _hexabodyPlayer4.Camera.transform.position, _hexabodyPlayer4.Camera.transform.right, -rotationAngleY );
+		}
 
-        protected override void TurnRig()
+		protected override void TurnRig()
         {
-            float rotationAngleX = MouseDelta.x * Time.deltaTime * _turnSpeed;
+            float rotationAngleX = MouseDelta.x * _turnSpeed;
             _hexabodyPlayer4.Pelvis.transform.RotateAround(_hexabodyPlayer4.Pelvis.transform.position, Vector3.up, rotationAngleX);
-
-            float rotationAngleY = MouseDelta.y * Time.deltaTime * _turnSpeed;
-            _hexabodyPlayer4.Camera.transform.RotateAround(_hexabodyPlayer4.Camera.transform.position, _hexabodyPlayer4.Camera.transform.right, -rotationAngleY);
         }
 
         #region Initialization
