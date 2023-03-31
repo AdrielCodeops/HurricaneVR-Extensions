@@ -51,6 +51,11 @@ Right Hand:
 - Joystick Button -> E + 3
 
 Changelog ------------------------------
+HVRSimulator 1.5.3
+- Add: Now you can slow down hand movement/rotation by pressing left shift (configurable).
+- Change: Button simulation improvements.
+- Change: General code cleanup
+
 HVRSimulator 1.5.2
 - Fix: Removed Time.deltaTime from body rotation to avoid stuttering.
 - Fix: Camera vertical movement moved to LateUpdate to avoid stuttering.
