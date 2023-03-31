@@ -13,29 +13,30 @@ namespace HurricaneVRExtensions.Simulator
         public GameObject Rig;
         public bool autoResolveDependencies = true;
 
-        [Header("Parameters")]
-        [SerializeField] protected bool _canMove = true;
-        [SerializeField] protected float _turnSpeed = 0.05f;
+        [Header("Settings")]
+        [SerializeField] protected bool canMove = true;
+
+		[Range(0.01f, 2)]
+        [SerializeField]
+		protected float turnSpeed = 0.1f;
 
         //Hurricane dependencies
         private HVRPlayerController _hurricanePlayerController;
         private HVRPlayerInputs _hurricanePlayerInputs;
 
-        protected bool _isTurning = false;
+        protected bool isTurning = false;
 
-        #region Input
+		#region Input
 #if ENABLE_INPUT_SYSTEM
-        public bool HasTurningStarted => Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame;
-        public bool HasTurningEnded => Mouse.current.rightButton.wasReleasedThisFrame;
+		public bool IsTurningPressed => Mouse.current != null && Mouse.current.rightButton.isPressed;
         public Vector2 MouseDelta => Mouse.current.delta.ReadValue();
 #elif ENABLE_LEGACY_INPUT_MANAGER
-        public bool HasTurningStarted => Input.GetMouseButtonDown(1);
-        public bool HasTurningEnded => Input.GetMouseButtonUp(1);
+		public bool IsTurningPressed => Input.GetMouseButton(1);
         public Vector2 MouseDelta => new Vector2(Input.GetAxis("Mouse X") * 10f, Input.GetAxis("Mouse Y") * 10f);
 #endif
-        #endregion
+		#endregion
 
-        protected virtual void Start()
+		protected virtual void Start()
         {
             if (!ResolveDependencies())
             {
@@ -43,21 +44,19 @@ namespace HurricaneVRExtensions.Simulator
                 enabled = false;
                 return;
             }
-            _hurricanePlayerInputs.UseWASD = _canMove;
+
+            _hurricanePlayerInputs.UseWASD = true;
         }
+
         protected void Update()
         {
-            if (HasTurningStarted)
-                _isTurning = true;
-            if (HasTurningEnded)
-                _isTurning = false;
+			isTurning = IsTurningPressed;
+			Cursor.visible = !isTurning;
+		}
 
-            Cursor.visible = !_isTurning;
-        }
-
-        protected virtual void FixedUpdate()
+		protected virtual void FixedUpdate()
         {
-            if (_isTurning)
+            if (isTurning)
             {
                 TurnRig();
             }
@@ -65,7 +64,7 @@ namespace HurricaneVRExtensions.Simulator
 
 		protected virtual void LateUpdate ()
 		{
-			if ( _isTurning )
+			if ( isTurning )
 			{
 				TurnCamera();
 			}
@@ -73,13 +72,13 @@ namespace HurricaneVRExtensions.Simulator
 
 		protected virtual void TurnCamera ()
 		{
-			float rotationAngleY = MouseDelta.y * _turnSpeed;
+			float rotationAngleY = MouseDelta.y * turnSpeed;
 			_hurricanePlayerController.Camera.transform.RotateAround( _hurricanePlayerController.Camera.transform.position, _hurricanePlayerController.Camera.transform.right, -rotationAngleY );
 		}
 
 		protected virtual void TurnRig()
         {
-            float rotationAngleX = MouseDelta.x * _turnSpeed;
+            float rotationAngleX = MouseDelta.x * turnSpeed;
             _hurricanePlayerController.transform.RotateAround(_hurricanePlayerController.transform.position, Vector3.up, rotationAngleX);
         }
 
@@ -90,20 +89,21 @@ namespace HurricaneVRExtensions.Simulator
                 return true;
 
             _hurricanePlayerController = Rig.GetComponentInChildren<HVRPlayerController>();
-            if (_hurricanePlayerController == null)
+			_hurricanePlayerInputs = Rig.GetComponentInChildren<HVRPlayerInputs>();
+
+			if (_hurricanePlayerController == null)
             {
                 Debug.Log(DependencyError("HVRPlayerController"));
                 return false;
             }
 
-            _hurricanePlayerInputs = Rig.GetComponentInChildren<HVRPlayerInputs>();
             if (_hurricanePlayerInputs == null)
             {
                 Debug.Log(DependencyError("HVRPlayerInputs"));
                 return false;
             }
 
-            return true;
+			return true;
         }
 
         private string DependencyError(string component)
