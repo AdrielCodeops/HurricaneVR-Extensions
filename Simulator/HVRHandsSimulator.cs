@@ -225,28 +225,31 @@ namespace HurricaneVRExtensions.Simulator
 		#endregion
 
 		private void HandleHandGrabbing(HVRHandGrabber handGrabber, HVRController controller)
-        {
-			if ( controller.GripButtonState.Active )
+        	{
+			if (!handGrabber.AllowGrabbing)
 			{
-				if ( handGrabber.IsGrabbing && handGrabber.CanRelease == true )
-				{
-					handGrabber.CanRelease = false;
-					return;
-				}
+			    handGrabber.AllowGrabbing = true;
 			}
-
-			if ( controller.GripButtonState.JustActivated )
+			
+			// Check if grip button was just activated
+			if (controller.GripButtonState.JustActivated)
 			{
-				if ( handGrabber.enabled == false )
-				{
-					handGrabber.enabled = true;
-				}
-
-				if ( handGrabber.IsGrabbing && handGrabber.CanRelease == false )
-				{
-					handGrabber.ForceRelease();
-					handGrabber.enabled = false;
-				}
+			    if (handGrabber.IsGrabbing && !handGrabber.CanRelease)
+			    {
+			        // Release and disable grabbing until the next frame
+			        handGrabber.ForceRelease();
+			        handGrabber.AllowGrabbing = false;
+			    }
+			}
+			
+			// Check if grip button is active
+			if (controller.GripButtonState.Active)
+			{
+			    if (handGrabber.IsGrabbing && handGrabber.CanRelease)
+			    {
+			        // Disable releasing
+			        handGrabber.CanRelease = false;
+			    }
 			}
 		}
 
