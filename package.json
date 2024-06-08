@@ -1,8 +1,0 @@
-{
-    "name": "com.adrielcodeops.hvrsimulator",
-    "displayName": "HVRSimulator",
-    "version": "2.0.0",
-    "documentationUrl": "https://github.com/AdrielCodeops/HurricaneVR-Extensions/blob/main/readme.md",
-    "licensesUrl": "https://github.com/AdrielCodeops/HurricaneVR-Extensions/blob/main/LICENSE",
-    "description": "HVRSimulator provides a set of components to control the Hurricane/Hexabody VR Rig using your keyboard and mouse."
-}
