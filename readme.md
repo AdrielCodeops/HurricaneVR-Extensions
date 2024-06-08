@@ -36,14 +36,9 @@ HVRSimulator main functionality is divided in two set of components:
 
 1. If you have a previous version installed, **delete its folder from your project** to avoid conflicts.
 
-2. You can get the latest `HVRSimulator package` in two ways:
+2. Get the latest `HVRSimulator package`:
 
    - Visit the [Releases](https://github.com/AdrielCodeops/HurricaneVR-Extensions/releases) page, download the latest HVRSimulator package, and import it into your project.
-
-   - **Using Package Manager**.
-     - Open Package Manager.
-     - Select "Add package from git URL.".
-     - Enter `https://github.com/AdrielCodeops/HurricaneVR-Extensions.git`.
 
 > [!IMPORTANT]
 > If you are using Hexabody, remember to import the HexabodyExtension package included within the HVRSimulator package.
@@ -111,7 +106,6 @@ HVRSimulator main functionality is divided in two set of components:
 ```md
 # Added
 - Added Assembly Definition to Hurricane's code.
-- Added package.json so you can install this package from: Package Manager -> Add package from git URL.
 
 # Changed
 - Now hexabody integration comes as a separate unity package inside the HVRSimulator package.
