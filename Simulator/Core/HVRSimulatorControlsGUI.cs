@@ -113,7 +113,7 @@ Joystick button -> {5}";
             {
                 GUI.TextArea(new Rect(0, 25, 300, 150), string.Format(tutorialText, _handsSimulator.LeftHandKey.ToString(), _handsSimulator.RightHandKey.ToString()));
             }
-               
+
 
             GUI.EndGroup();
         }

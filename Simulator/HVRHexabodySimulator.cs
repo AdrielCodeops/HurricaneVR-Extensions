@@ -1,5 +1,5 @@
-using UnityEngine;
 using HexabodyVR.PlayerController;
+using UnityEngine;
 
 namespace HurricaneVRExtensions.Simulator
 {
@@ -21,13 +21,13 @@ namespace HurricaneVRExtensions.Simulator
             _hexabodyInputs.KeyboardDebug = true;
         }
 
-		protected override void TurnCamera ()
-		{
-			float rotationAngleY = MouseDelta.y * turnSpeed;
-			_hexabodyPlayer4.Camera.transform.RotateAround( _hexabodyPlayer4.Camera.transform.position, _hexabodyPlayer4.Camera.transform.right, -rotationAngleY );
-		}
+        protected override void TurnCamera()
+        {
+            float rotationAngleY = MouseDelta.y * turnSpeed;
+            _hexabodyPlayer4.Camera.transform.RotateAround(_hexabodyPlayer4.Camera.transform.position, _hexabodyPlayer4.Camera.transform.right, -rotationAngleY);
+        }
 
-		protected override void TurnRig()
+        protected override void TurnRig()
         {
             float rotationAngleX = MouseDelta.x * turnSpeed;
             _hexabodyPlayer4.Pelvis.transform.RotateAround(_hexabodyPlayer4.Pelvis.transform.position, Vector3.up, rotationAngleX);
@@ -39,16 +39,16 @@ namespace HurricaneVRExtensions.Simulator
             if (!autoResolveDependencies)
                 return true;
 
-			_hexabodyPlayer4 = Rig.GetComponentInChildren<HexaBodyPlayer4>();
-			_hexabodyInputs = Rig.GetComponentInChildren<HVRHexaBodyInputs>();
+            _hexabodyPlayer4 = Rig.GetComponentInChildren<HexaBodyPlayer4>();
+            _hexabodyInputs = Rig.GetComponentInChildren<HVRHexaBodyInputs>();
 
-			if ( _hexabodyPlayer4 == null )
-			{
-				Debug.Log( DependencyError( "HexaBodyPlayer4" ) );
-				return false;
-			}
+            if (_hexabodyPlayer4 == null)
+            {
+                Debug.Log(DependencyError("HexaBodyPlayer4"));
+                return false;
+            }
 
-			if (_hexabodyInputs == null)
+            if (_hexabodyInputs == null)
             {
                 Debug.Log(DependencyError("HVRHexaBodyInputs"));
                 return false;
