@@ -32,6 +32,22 @@ HVRSimulator main functionality is divided in two set of components:
 - **Headset Compatibility:** Works with the headset connected (in Editor/PC).
 - **On-Screen Controls Guide:** Optional guide for quick and easy iteration.
 
+## How to Install
+
+1. If you have a previous version installed, **delete its folder from your project** to avoid conflicts.
+
+2. You can get the latest `HVRSimulator package` in two ways:
+
+   - Visit the [Releases](https://github.com/AdrielCodeops/HurricaneVR-Extensions/releases) page, download the latest HVRSimulator package, and import it into your project.
+
+   - **Using Package Manager**.
+     - Open Package Manager.
+     - Select "Add package from git URL.".
+     - Enter `https://github.com/AdrielCodeops/HurricaneVR-Extensions.git`.
+
+> [!IMPORTANT]
+> If you are using Hexabody, remember to import the HexabodyExtension package included within the HVRSimulator package.
+
 ## How to Use
 
 **For Hurricane:**
@@ -90,14 +106,19 @@ HVRSimulator main functionality is divided in two set of components:
 
 ## Changelog
 
-### HVRSimulator [2.0.0] (Next)
+### [HVRSimulator](https://github.com/AdrielCodeops/HurricaneVR-Extensions/releases/tag/Simulator_2.0.0) [2.0.0]
 
 ```md
 # Added
 - Added Assembly Definition to Hurricane's code.
+- Added package.json so you can install this package from: Package Manager -> Add package from git URL.
 # Changed
+- Now hexabody integration comes as a separate unity package inside the HVRSimulator package.
 # Fixed
 - Fixed grabbables sometimes getting stuck in your hand.
+
+# How to update (!)
+This version contains breaking changes. Please, follow the instructions in #How To Install.
 ```
 
 ### [HVRSimulator](https://github.com/AdrielCodeops/HurricaneVR-Extensions/releases/tag/Simulator_1.5.3) [1.5.3]
