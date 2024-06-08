@@ -1,6 +1,6 @@
 {
-    "name": "com.adrielcodeops.universal-shadergraph-extensions",
-    "displayName": "HVRSimulator for HurricaneVR",
+    "name": "com.adrielcodeops.hvrsimulator",
+    "displayName": "HVRSimulator",
     "version": "2.0.0",
     "documentationUrl": "https://github.com/AdrielCodeops/HurricaneVR-Extensions/blob/main/readme.md",
     "licensesUrl": "https://github.com/AdrielCodeops/HurricaneVR-Extensions/blob/main/LICENSE",
