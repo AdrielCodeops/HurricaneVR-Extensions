@@ -112,8 +112,10 @@ HVRSimulator main functionality is divided in two set of components:
 # Added
 - Added Assembly Definition to Hurricane's code.
 - Added package.json so you can install this package from: Package Manager -> Add package from git URL.
+
 # Changed
 - Now hexabody integration comes as a separate unity package inside the HVRSimulator package.
+
 # Fixed
 - Fixed grabbables sometimes getting stuck in your hand.
 
